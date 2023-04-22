@@ -3,15 +3,23 @@ const niceList = require('../utils/niceList.json');
 const MerkleTree = require('../utils/MerkleTree');
 
 const serverUrl = 'http://localhost:1225';
+const tree = new MerkleTree(niceList);
 
 async function main() {
-  // TODO: how do we prove to the server we're on the nice list? 
+  
+  if (process.argv.length < 3) {
+    console.log('Usage: node index.js [name]');
+    process.exit(1);
+  }
+  const name = process.argv[2];
+  const index = niceList.findIndex(x => x === name);
+  const proof = tree.getProof(index);
 
   const { data: gift } = await axios.post(`${serverUrl}/gift`, {
-    // TODO: add request body parameters here!
+    proof,
+    name
   });
-
-  console.log({ gift });
+  console.log( { gift } );
 }
 
 main();
